@@ -1,0 +1,7 @@
+babl:module:created:
+  -
+    exec: larskluge/bablbot
+    env:
+      CHAT_ID: 70688529
+  -
+    exec: babl/init-repo
