@@ -1,3 +1,8 @@
+test:hi:
+  -
+    exec: larskluge/mail
+    env:
+      TO: l@larskluge.com
 babl:module:created:
   -
     exec: larskluge/bablbot
@@ -5,3 +10,36 @@ babl:module:created:
       CHAT_ID: 70688529
   -
     exec: babl/init-repo
+babl:error:
+  -
+    exec: larskluge/bablbot
+    env:
+      CHAT_ID: 91321083
+  -
+    exec: larskluge/mail
+    env:
+      TO: l@larskluge.com
+babl:user:updated:
+  -
+    exec: larskluge/babl-repo-sync
+babl:user:created:
+  -
+    exec: larskluge/bablbot
+    env:
+      CHAT_ID: 70688529
+babl:inbox:
+  -
+    exec: larskluge/bablbot
+    env:
+      CHAT_ID: 122572256
+  -
+    exec: babl/inbox-observer
+babl:repo:readme:updated:
+  -
+    exec: larskluge/http-forward
+    env:
+      URL: "`https://inbox.babl.bablusercontent.com/${process.env.MODULE}`"
+      FORMAT: "{module: {readme: input}}"
+babl:repo:updated:
+  -
+    exec: babl/extract-readme

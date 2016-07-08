@@ -44,13 +44,51 @@ func (fi bindataFileInfo) Sys() interface{} {
 	return nil
 }
 
-var _subscriptionsYml = []byte(`babl:module:created:
+var _subscriptionsYml = []byte(`test:hi:
+  -
+    exec: larskluge/mail
+    env:
+      TO: l@larskluge.com
+babl:module:created:
   -
     exec: larskluge/bablbot
     env:
       CHAT_ID: 70688529
   -
     exec: babl/init-repo
+babl:error:
+  -
+    exec: larskluge/bablbot
+    env:
+      CHAT_ID: 91321083
+  -
+    exec: larskluge/mail
+    env:
+      TO: l@larskluge.com
+babl:user:updated:
+  -
+    exec: larskluge/babl-repo-sync
+babl:user:created:
+  -
+    exec: larskluge/bablbot
+    env:
+      CHAT_ID: 70688529
+babl:inbox:
+  -
+    exec: larskluge/bablbot
+    env:
+      CHAT_ID: 122572256
+  -
+    exec: babl/inbox-observer
+babl:repo:readme:updated:
+  -
+    exec: larskluge/http-forward
+    env:
+      URL: "`+"`"+`https://inbox.babl.bablusercontent.com/${process.env.MODULE}`+"`"+`"
+      FORMAT: "{module: {readme: input}}"
+babl:repo:updated:
+  -
+    exec: babl/extract-readme
 `)
 
 func subscriptionsYmlBytes() ([]byte, error) {
@@ -63,7 +101,7 @@ func subscriptionsYml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "subscriptions.yml", size: 115, mode: os.FileMode(420), modTime: time.Unix(1467347712, 0)}
+	info := bindataFileInfo{name: "subscriptions.yml", size: 826, mode: os.FileMode(420), modTime: time.Unix(1467975938, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
