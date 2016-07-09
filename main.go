@@ -59,6 +59,9 @@ func main() {
 }
 
 func exec(moduleName string, env babl.Env, stdin *[]byte) {
+	if env == nil {
+		env = babl.Env{}
+	}
 	env = includeForwardedEnv(env)
 	log.WithFields(log.Fields{"module": moduleName, "env": env}).Info("Executing Module")
 	module := babl.NewModule(moduleName)
