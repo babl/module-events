@@ -47,10 +47,10 @@ func main() {
 			for _, sub := range subs {
 				wg.Add(1)
 				n += 1
-				go func() {
+				go func(sub Subscription) {
 					defer wg.Done()
 					exec(sub.Exec, sub.Env, &stdin)
-				}()
+				}(sub)
 			}
 		}
 	}
