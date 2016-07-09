@@ -3,10 +3,11 @@
 package main
 
 import (
-	"log"
 	"os"
+	"strings"
 	"sync"
 
+	log "github.com/Sirupsen/logrus"
 	babl "github.com/larskluge/babl/shared"
 	"gopkg.in/yaml.v2"
 )
@@ -18,9 +19,18 @@ type Subscription struct {
 
 type config map[string][]Subscription
 
+func init() {
+	log.SetOutput(os.Stderr)
+	log.SetFormatter(&log.JSONFormatter{})
+}
+
 func main() {
 	event := os.Getenv("EVENT")
-	log.Printf("Event triggered: %s\n", event)
+
+	if event == "" {
+		log.Warn("No EVENT given")
+		os.Exit(0)
+	}
 
 	contents, err := Asset("subscriptions.yml")
 	check(err)
@@ -30,11 +40,13 @@ func main() {
 
 	stdin := babl.ReadStdin()
 
+	n := 0
 	var wg sync.WaitGroup
 	for e, subs := range c {
 		if e == event {
 			for _, sub := range subs {
 				wg.Add(1)
+				n += 1
 				go func() {
 					defer wg.Done()
 					exec(sub.Exec, sub.Env, &stdin)
@@ -42,17 +54,32 @@ func main() {
 			}
 		}
 	}
+	log.WithFields(log.Fields{"event": event, "subscriptions": n}).Info("Event Triggered")
 	wg.Wait()
 }
 
 func exec(moduleName string, env babl.Env, stdin *[]byte) {
-	log.Printf("EXEC babl --async %s %q", moduleName, env)
+	env = includeForwardedEnv(env)
+	log.WithFields(log.Fields{"module": moduleName, "env": env}).Info("Executing Module")
 	module := babl.NewModule(moduleName)
 	module.Address = "queue.babl.sh:4445"
 	module.Env = env
 	module.SetAsync(true)
 	_, _, _, err := module.Call(*stdin)
 	check(err)
+}
+
+func includeForwardedEnv(env babl.Env) babl.Env {
+	varList := os.Getenv("BABL_VARS")
+	if varList != "" {
+		vars := strings.Split(varList, ",")
+		for _, k := range vars {
+			if _, exists := env[k]; !exists { // do not overwrite subscription configuration values
+				env[k] = os.Getenv(k)
+			}
+		}
+	}
+	return env
 }
 
 func check(err error) {
