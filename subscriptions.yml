@@ -1,8 +1,8 @@
 test:hi:
   -
-    exec: larskluge/mail
+    exec: larskluge/bablbot
     env:
-      TO: l@larskluge.com
+      CHAT_ID: 70688529
 babl:module:created:
   -
     exec: larskluge/bablbot

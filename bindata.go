@@ -46,9 +46,9 @@ func (fi bindataFileInfo) Sys() interface{} {
 
 var _subscriptionsYml = []byte(`test:hi:
   -
-    exec: larskluge/mail
+    exec: larskluge/bablbot
     env:
-      TO: l@larskluge.com
+      CHAT_ID: 70688529
 babl:module:created:
   -
     exec: larskluge/bablbot
@@ -101,7 +101,7 @@ func subscriptionsYml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "subscriptions.yml", size: 826, mode: os.FileMode(420), modTime: time.Unix(1468062231, 0)}
+	info := bindataFileInfo{name: "subscriptions.yml", size: 827, mode: os.FileMode(420), modTime: time.Unix(1468345451, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
