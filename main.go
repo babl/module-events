@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/cenk/backoff"
 	babl "github.com/larskluge/babl/shared"
 	"gopkg.in/yaml.v2"
 )
@@ -49,7 +50,13 @@ func main() {
 				n += 1
 				go func(sub Subscription) {
 					defer wg.Done()
-					exec(sub.Exec, sub.Env, &stdin)
+					fn := func() error {
+						return exec(sub.Exec, sub.Env, &stdin)
+					}
+					backoff.Retry(fn, backoff.NewExponentialBackOff())
+					if err != nil {
+						log.WithError(err).Warn("Subscription could not be executed")
+					}
 				}(sub)
 			}
 		}
@@ -58,7 +65,7 @@ func main() {
 	wg.Wait()
 }
 
-func exec(moduleName string, env babl.Env, stdin *[]byte) {
+func exec(moduleName string, env babl.Env, stdin *[]byte) error {
 	if env == nil {
 		env = babl.Env{}
 	}
@@ -69,7 +76,7 @@ func exec(moduleName string, env babl.Env, stdin *[]byte) {
 	module.Env = env
 	module.SetAsync(true)
 	_, _, _, err := module.Call(*stdin)
-	check(err)
+	return err
 }
 
 func includeForwardedEnv(env babl.Env) babl.Env {
