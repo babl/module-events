@@ -101,7 +101,7 @@ func subscriptionsYml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "subscriptions.yml", size: 826, mode: os.FileMode(420), modTime: time.Unix(1467975938, 0)}
+	info := bindataFileInfo{name: "subscriptions.yml", size: 826, mode: os.FileMode(420), modTime: time.Unix(1468062231, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
