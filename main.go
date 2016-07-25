@@ -9,13 +9,14 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/cenk/backoff"
-	babl "github.com/larskluge/babl/shared"
+	"github.com/larskluge/babl/bablmodule"
+	"github.com/larskluge/babl/bablutils"
 	"gopkg.in/yaml.v2"
 )
 
 type Subscription struct {
-	Exec string   `yaml:"exec"`
-	Env  babl.Env `yaml:"env"`
+	Exec string         `yaml:"exec"`
+	Env  bablmodule.Env `yaml:"env"`
 }
 
 type config map[string][]Subscription
@@ -39,7 +40,7 @@ func main() {
 	err = yaml.Unmarshal(contents, &c)
 	check(err)
 
-	stdin := babl.ReadStdin()
+	stdin := bablutils.ReadStdin()
 
 	n := 0
 	var wg sync.WaitGroup
@@ -65,13 +66,13 @@ func main() {
 	wg.Wait()
 }
 
-func exec(moduleName string, env babl.Env, stdin *[]byte) error {
+func exec(moduleName string, env bablmodule.Env, stdin *[]byte) error {
 	if env == nil {
-		env = babl.Env{}
+		env = bablmodule.Env{}
 	}
 	env = includeForwardedEnv(env)
 	log.WithFields(log.Fields{"module": moduleName, "env": env}).Info("Executing Module")
-	module := babl.NewModule(moduleName)
+	module := bablmodule.New(moduleName)
 	module.Address = "queue.babl.sh:4445"
 	module.Env = env
 	module.SetAsync(true)
@@ -79,7 +80,7 @@ func exec(moduleName string, env babl.Env, stdin *[]byte) error {
 	return err
 }
 
-func includeForwardedEnv(env babl.Env) babl.Env {
+func includeForwardedEnv(env bablmodule.Env) bablmodule.Env {
 	varList := os.Getenv("BABL_VARS")
 	if varList != "" {
 		vars := strings.Split(varList, ",")
