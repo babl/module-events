@@ -80,15 +80,18 @@ babl:inbox:
       CHAT_ID: 122572256
   -
     exec: babl/inbox-observer
+babl:repo:updated:
+  -
+    exec: babl/extract-readme
 babl:repo:readme:updated:
   -
     exec: larskluge/http-forward
     env:
-      URL: "`+"`"+`https://inbox.babl.bablusercontent.com/${process.env.MODULE}`+"`"+`"
-      FORMAT: "{module: {readme: input}}"
-babl:repo:updated:
-  -
-    exec: babl/extract-readme
+      FORMAT: json
+      TEMPLATE: '{"module": {"readme": {{.}}}}'
+      METHOD: PATCH
+      CONTENT_TYPE: application/json
+      URL: "https://babl.sh/api/modules/{{.Env.MODULE}}"
 `)
 
 func subscriptionsYmlBytes() ([]byte, error) {
@@ -101,7 +104,7 @@ func subscriptionsYml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "subscriptions.yml", size: 827, mode: os.FileMode(420), modTime: time.Unix(1468345451, 0)}
+	info := bindataFileInfo{name: "subscriptions.yml", size: 890, mode: os.FileMode(420), modTime: time.Unix(1469443563, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
