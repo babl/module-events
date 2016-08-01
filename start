@@ -1,4 +1,4 @@
 #!/bin/sh
 
-events -update
+app -update
 babl-server
