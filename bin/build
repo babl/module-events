@@ -1,5 +1,4 @@
 #!/bin/sh -xe
 
-go generate
 gox -osarch="linux/amd64"
 babl-build build
