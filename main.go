@@ -1,8 +1,8 @@
-//go:generate go-bindata -nocompress subscriptions.yml
-
 package main
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"os"
 	"strings"
 	"sync"
@@ -11,12 +11,11 @@ import (
 	"github.com/cenk/backoff"
 	"github.com/larskluge/babl/bablmodule"
 	"github.com/larskluge/babl/bablutils"
-	"gopkg.in/yaml.v2"
 )
 
 type Subscription struct {
-	Exec string         `yaml:"exec"`
-	Env  bablmodule.Env `yaml:"env"`
+	Exec string         `json:"module"`
+	Env  bablmodule.Env `json:"env"`
 }
 
 type config map[string][]Subscription
@@ -34,10 +33,10 @@ func main() {
 		os.Exit(0)
 	}
 
-	contents, err := Asset("subscriptions.yml")
+	contents, err := ioutil.ReadFile("subscriptions.json")
 	check(err)
 	var c config
-	err = yaml.Unmarshal(contents, &c)
+	err = json.Unmarshal(contents, &c)
 	check(err)
 
 	stdin := bablutils.ReadStdin()
