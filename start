@@ -1,0 +1,4 @@
+#!/bin/sh
+
+events -update
+babl-server

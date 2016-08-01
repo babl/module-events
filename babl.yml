@@ -1,2 +1,3 @@
 id: babl/events
 build: false
+cmd: start

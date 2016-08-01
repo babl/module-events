@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -12,6 +13,10 @@ import (
 	"github.com/larskluge/babl/bablmodule"
 	"github.com/larskluge/babl/bablutils"
 )
+
+const SubscriptionsPath = "subscriptions.json"
+
+var updateSubscriptionsFlag = flag.Bool("update", false, "Update Subscriptions & exit")
 
 type Subscription struct {
 	Exec string         `json:"module"`
@@ -26,14 +31,21 @@ func init() {
 }
 
 func main() {
+	flag.Parse()
 	event := os.Getenv("EVENT")
+
+	if event == "babl:subscriptions:updated" || *updateSubscriptionsFlag {
+		log.Info("Updating event subscriptions from babl.sh")
+		updateSubscriptions()
+		os.Exit(0)
+	}
 
 	if event == "" {
 		log.Warn("No EVENT given")
 		os.Exit(0)
 	}
 
-	contents, err := ioutil.ReadFile("subscriptions.json")
+	contents, err := ioutil.ReadFile(SubscriptionsPath)
 	check(err)
 	var c config
 	err = json.Unmarshal(contents, &c)

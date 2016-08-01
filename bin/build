@@ -1,4 +1,6 @@
 #!/bin/sh -xe
 
+go build
+./events -update
 gox -osarch="linux/amd64"
 babl-build build
