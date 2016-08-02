@@ -1,3 +1,4 @@
 id: babl/events
 build: false
 cmd: start
+mem: 32
