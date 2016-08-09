@@ -34,24 +34,33 @@ func main() {
 	flag.Parse()
 	event := os.Getenv("EVENT")
 
+	log.Info("0")
+
 	if event == "babl:subscriptions:updated" || *updateSubscriptionsFlag {
 		log.Info("Updating event subscriptions from babl.sh")
 		updateSubscriptions()
 		os.Exit(0)
 	}
+	log.Info("1")
 
 	if event == "" {
 		log.Warn("No EVENT given")
 		os.Exit(0)
 	}
 
+	log.Info("before")
 	contents, err := ioutil.ReadFile(SubscriptionsPath)
+	log.Info("after")
 	check(err)
 	var c config
+	log.Info("before1")
 	err = json.Unmarshal(contents, &c)
+	log.Info("after2")
 	check(err)
 
 	stdin := bablutils.ReadStdin()
+
+	log.Info("4")
 
 	n := 0
 	var wg sync.WaitGroup
