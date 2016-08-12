@@ -98,8 +98,8 @@ func exec(moduleName string, env bablmodule.Env, stdin *[]byte) error {
 	module.Env = env
 	module.SetAsync(true)
 	module.SetDebug(true)
-	_, _, stderr, err := module.Call(*stdin)
-	log.Warn(stderr)
+	stdout, stderr, exitcode, err := module.Call(*stdin)
+	log.WithFields(log.Fields{"stdout": stdout, "stderr": stderr, "exitcode": exitcode, "error": err, "module": moduleName, "env": env, "stdin": *stdin}).Warn("babl/events: Module call failed")
 	return err
 }
 
