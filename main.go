@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"time"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/cenk/backoff"
@@ -62,10 +63,13 @@ func main() {
 				n += 1
 				go func(sub Subscription) {
 					defer wg.Done()
-					fn := func() error {
+					operation := func() error {
 						return exec(sub.Exec, sub.Env, &stdin)
 					}
-					backoff.Retry(fn, backoff.NewExponentialBackOff())
+					notify := func(err error, duration time.Duration) {
+						log.WithFields(log.Fields{"duration": duration}).WithError(err).Warn("babl/events: module exec failed, retrying..")
+					}
+					err := backoff.RetryNotify(operation, backoff.NewExponentialBackOff(), notify)
 					if err != nil {
 						log.WithError(err).Warn("Subscription could not be executed")
 					}
@@ -90,7 +94,7 @@ func exec(moduleName string, env bablmodule.Env, stdin *[]byte) error {
 	module.SetAsync(true)
 	module.SetDebug(true)
 	stdout, stderr, exitcode, err := module.Call(*stdin)
-	log.WithFields(log.Fields{"stdout": stdout, "stderr": stderr, "exitcode": exitcode, "error": err, "module": moduleName, "env": env, "stdin": *stdin}).Warn("babl/events: Module call failed")
+	log.WithFields(log.Fields{"stdout": string(stdout), "stderr": string(stderr), "exitcode": exitcode, "error": err, "module": moduleName, "env": env, "stdin": string(*stdin)}).Warn("babl/events: Module call failed")
 	return err
 }
 
