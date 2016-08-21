@@ -96,7 +96,13 @@ func exec(moduleName string, env bablmodule.Env, stdin *[]byte) error {
 	stdout, stderr, exitcode, err := module.Call(*stdin)
 	if err != nil {
 		log.WithFields(log.Fields{"stdout": string(stdout), "stderr": string(stderr), "exitcode": exitcode, "error": err, "module": moduleName, "env": env, "stdin": string(*stdin)}).Warn("babl/events: Module call failed")
+
+		// unknown module requested to be triggered, ignoring
+		if strings.Contains(err.Error(), "unknown service") {
+			err = nil
+		}
 	}
+
 	return err
 }
 
