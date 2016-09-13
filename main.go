@@ -88,7 +88,6 @@ func exec(moduleName string, env bablmodule.Env, stdin *[]byte) error {
 	env = includeForwardedEnv(env)
 	log.WithFields(log.Fields{"module": moduleName, "env": env}).Info("Executing Module")
 	module := bablmodule.New(moduleName)
-	module.Address = "queue.babl.sh:4445"
 	// module.Address = "localhost:4445"
 	module.Env = env
 	module.SetAsync(true)
