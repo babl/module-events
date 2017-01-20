@@ -57,7 +57,7 @@ func main() {
 	n := 0
 	var wg sync.WaitGroup
 	for e, subs := range c {
-		if e == event {
+		if e == event || e == "*" {
 			for _, sub := range subs {
 				wg.Add(1)
 				n += 1
